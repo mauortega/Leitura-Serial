@@ -13,10 +13,8 @@ unsigned char BufSerial[BUFFER_SIZE]; //Buffer para armazenar os dados recebidos
 const int INTERVALO = 20;             //Tempo para receber os dados seriais
 bool ChegouDados = false;
 String flag, pesoBruto, tara, pesoLiquido;
-
 static unsigned long TempoAnterior = 0;          //Inicializa em 0ms.
 unsigned long TempoCorrente = millis();          //Retorna o tempo desde que o programa foi executado.
-
 
 void setup() {
   Serial.begin(9600);
@@ -26,11 +24,9 @@ void setup() {
   lcd.print("# Balanca serial #");
   lcd.setCursor(0, 1);
   lcd.print("iniciando");
-
 #ifdef DEBUG
   Serial.println("iniciando Balança");
 #endif
-
   for (int i = 0; i < 7; i++) {
     lcd.setCursor((i + 1), 1);
     lcd.print("*");
@@ -42,9 +38,7 @@ void setup() {
   Serial.println("Balança iniciada");
 #endif
 }
-
 void loop() {
-
   if (ChegouDados)
   {
     ChegouDados = false;
@@ -52,19 +46,16 @@ void loop() {
     Serial.println((char*)BufSerial);
 #endif
     //S,BBB.BBB,TTT.TTT,LLL.LLL
-
     String streamData    = (char*)BufSerial;
     int commaIndex       = streamData.indexOf(',');//1
     int secondCommaIndex = streamData.indexOf(',', commaIndex + 1); //9
     int thirdCommaIndex  = streamData.indexOf(',', secondCommaIndex + 1);//17
 
     if (commaIndex > 0 and secondCommaIndex > 0 and thirdCommaIndex > 0) {
-
       flag        = streamData.substring(0, commaIndex);
       pesoBruto   = streamData.substring(commaIndex + 1, secondCommaIndex);
       tara        = streamData.substring(secondCommaIndex + 1, thirdCommaIndex);
       pesoLiquido = streamData.substring(thirdCommaIndex + 1);
-
 #ifdef DEBUG
       Serial.println(flag);
       Serial.println(pesoBruto);
@@ -90,7 +81,6 @@ void loop() {
 void serialEvent()  //
 {
   TempoAnterior = TempoCorrente = millis();
-
   while (Serial.available()) //Le dados enquanto o buffer Serial tiver dados.
   {
     TempoCorrente = millis();
@@ -102,7 +92,7 @@ void serialEvent()  //
       memset(BufSerial, 0, BUFFER_SIZE - 1); //Limpa o buffer.
       break;
     }
-
+    
     unsigned char SerialByte = Serial.read(); // Guarda o byte do buffer serial;
 
     delay(2);
