@@ -13,8 +13,9 @@ unsigned char BufSerial[BUFFER_SIZE]; //Buffer para armazenar os dados recebidos
 const int INTERVALO = 20;             //Tempo para receber os dados seriais
 bool ChegouDados = false;
 String flag, pesoBruto, tara, pesoLiquido;
+
 static unsigned long TempoAnterior = 0;          //Inicializa em 0ms.
-unsigned long TempoCorrente = millis();            //Retorna o tempo desde que o programa foi executado.
+unsigned long TempoCorrente = millis();          //Retorna o tempo desde que o programa foi executado.
 
 
 void setup() {
@@ -48,17 +49,17 @@ void loop() {
   {
     ChegouDados = false;
 #ifdef DEBUG
-   Serial.println((char*)BufSerial);
+    Serial.println((char*)BufSerial);
 #endif
     //S,BBB.BBB,TTT.TTT,LLL.LLL
-    
+
     String streamData    = (char*)BufSerial;
-    int commaIndex       = streamData.indexOf(',');
-    int secondCommaIndex = streamData.indexOf(',', commaIndex + 1);
-    int thirdCommaIndex  = streamData.indexOf(',', secondCommaIndex + 1);
+    int commaIndex       = streamData.indexOf(',');//1
+    int secondCommaIndex = streamData.indexOf(',', commaIndex + 1); //9
+    int thirdCommaIndex  = streamData.indexOf(',', secondCommaIndex + 1);//17
 
     if (commaIndex > 0 and secondCommaIndex > 0 and thirdCommaIndex > 0) {
-  
+
       flag        = streamData.substring(0, commaIndex);
       pesoBruto   = streamData.substring(commaIndex + 1, secondCommaIndex);
       tara        = streamData.substring(secondCommaIndex + 1, thirdCommaIndex);
@@ -78,7 +79,7 @@ void loop() {
       {
         digitalWrite(led, LOW);
       }
-
+      memset(BufSerial, 0, BUFFER_SIZE - 1); //Limpa o buffer.
       lcd.setCursor(0, 1);
       lcd.print("Peso L = ");
       lcd.print(pesoLiquido);
@@ -88,6 +89,7 @@ void loop() {
 
 void serialEvent()  //
 {
+  TempoAnterior = TempoCorrente = millis();
 
   while (Serial.available()) //Le dados enquanto o buffer Serial tiver dados.
   {
@@ -98,6 +100,7 @@ void serialEvent()  //
       //TempoAnterior = TempoCorrente;
       Index = 0;                             //Inicializa ixdexador do array.
       memset(BufSerial, 0, BUFFER_SIZE - 1); //Limpa o buffer.
+      break;
     }
 
     unsigned char SerialByte = Serial.read(); // Guarda o byte do buffer serial;
