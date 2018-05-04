@@ -1,0 +1,52 @@
+#define DEBUG  /// Habilita debug na serial
+//S,BBB.BBB,TTT.TTT,LLL.LLL
+//1,111.000,222.123,444.001
+void setup()
+{
+	Serial.begin(9600);
+	Serial.setTimeout(20);
+}
+
+void loop()
+{
+	if (Serial.available())
+	{
+		String streamData = Serial.readStringUntil('\n');
+		parseCommand(streamData);
+		streamData = "";
+	}
+}
+
+void parseCommand(String str)
+{
+	int pos1,pos2,pos3;
+	String part1, part2, part3, part4;
+	
+	pos1 = str.indexOf(',');		 
+	pos2 = str.indexOf(',', pos1 + 1);
+	pos3 = str.indexOf(',', pos2 + 1);
+	
+	if (pos1>0  && pos2>0 && pos3 > 0)
+	{
+		part1 = str.substring(0, str.indexOf(','));
+		part2 = str.substring(pos1 + 1, pos2);
+		part3 = str.substring(pos2 + 1, pos3);
+		part4 = str.substring(pos3 + 1);
+	
+	#ifdef DEBUG	
+		Serial.println("\nPart1 " + String(part1));
+		Serial.println("Part2 " + String(part2));
+		Serial.println("Part3 " + String(part3));
+		Serial.println("Part4 " + String(part4));
+		
+		part2.replace(".", "");
+		part3.replace(".", "");
+		part4.replace(".", "");
+		
+		Serial.println("\nPart1 " + String(part1));
+		Serial.println("Part2 " + String(part2));
+		Serial.println("Part3 " + String(part3));
+		Serial.println("Part4 " + String(part4));
+	#endif
+	}
+}
